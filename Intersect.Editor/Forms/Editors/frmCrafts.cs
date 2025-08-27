@@ -24,7 +24,7 @@ public partial class FrmCrafts : EditorForm
 
     private List<string> mKnownFolders = new List<string>();
 
-    private bool updatingIngedients = false;
+    private bool updatingIngredients = false;
 
     public FrmCrafts()
     {
@@ -35,15 +35,25 @@ public partial class FrmCrafts : EditorForm
         _btnCancel = btnCancel;
         lstGameObjects.LostFocus += itemList_FocusChanged;
         lstGameObjects.GotFocus += itemList_FocusChanged;
-        cmbResult.Items.Clear();
-        cmbResult.Items.Add(Strings.General.None);
-        cmbResult.Items.AddRange(ItemDescriptor.Names);
+        cmbItemUnique.Items.Clear();
+        cmbItemUnique.Items.Add(Strings.General.None);
+        cmbItemUnique.Items.AddRange(ItemDescriptor.Names);
         cmbIngredient.Items.Clear();
         cmbIngredient.Items.Add(Strings.General.None);
         cmbIngredient.Items.AddRange(ItemDescriptor.Names);
         cmbEvent.Items.Clear();
         cmbEvent.Items.Add(Strings.General.None);
         cmbEvent.Items.AddRange(EventDescriptor.Names);
+
+
+        cmbItemMultiple.Items.Clear();
+        for (var i = 0; i < Strings.ItemEditor.types.Count; i++)
+        {
+            cmbItemMultiple.Items.Add(Strings.ItemEditor.types[i]);
+        }
+        //Hide Swapping Boxes
+        lblItemMultiple.Hide();
+        cmbItemMultiple.Hide();
 
         lstGameObjects.Init(UpdateToolStripItems, AssignEditorItem, toolStripItemNew_Click, toolStripItemCopy_Click, toolStripItemUndo_Click, toolStripItemPaste_Click, toolStripItemDelete_Click);
     }
@@ -80,7 +90,9 @@ public partial class FrmCrafts : EditorForm
             nudSpeed.Value = mEditorItem.Time;
             nudFailureChance.Value = mEditorItem.FailureChance;
             nudItemLossChance.Value = mEditorItem.ItemLossChance;
-            cmbResult.SelectedIndex = ItemDescriptor.ListIndex(mEditorItem.ItemId) + 1;
+            cmbCraftType.SelectedIndex = mEditorItem.CraftTypeId;
+            cmbItemUnique.SelectedIndex = ItemDescriptor.ListIndex(mEditorItem.ItemId) + 1;
+            cmbItemMultiple.SelectedIndex = (int)mEditorItem.ItemType;
 
             nudCraftQuantity.Value = mEditorItem.Quantity;
 
@@ -149,8 +161,8 @@ public partial class FrmCrafts : EditorForm
 
         if (lstIngredients.SelectedIndex > -1)
         {
-            mEditorItem.Ingredients[lstIngredients.SelectedIndex].Quantity = (int) nudQuantity.Value;
-            updatingIngedients = true;
+            mEditorItem.Ingredients[lstIngredients.SelectedIndex].Quantity = (int)nudQuantity.Value;
+            updatingIngredients = true;
             if (cmbIngredient.SelectedIndex > 0)
             {
                 lstIngredients.Items[lstIngredients.SelectedIndex] =
@@ -167,23 +179,23 @@ public partial class FrmCrafts : EditorForm
                     );
             }
 
-            updatingIngedients = false;
+            updatingIngredients = false;
         }
     }
 
     private void nudSpeed_ValueChanged(object sender, EventArgs e)
     {
-        mEditorItem.Time = (int) nudSpeed.Value;
+        mEditorItem.Time = (int)nudSpeed.Value;
     }
 
     private void nudFailureChance_ValueChanged(object sender, EventArgs e)
     {
-        mEditorItem.FailureChance = (int) nudFailureChance.Value;
+        mEditorItem.FailureChance = (int)nudFailureChance.Value;
     }
 
     private void nudItemLossChance_ValueChanged(object sender, EventArgs e)
     {
-        mEditorItem.ItemLossChance = (int) nudItemLossChance.Value;
+        mEditorItem.ItemLossChance = (int)nudItemLossChance.Value;
     }
 
     private void btnAdd_Click(object sender, EventArgs e)
@@ -341,7 +353,7 @@ public partial class FrmCrafts : EditorForm
 
     private void lstIngredients_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (updatingIngedients)
+        if (updatingIngredients)
         {
             return;
         }
@@ -382,9 +394,9 @@ public partial class FrmCrafts : EditorForm
         }
     }
 
-    private void cmbResult_SelectedIndexChanged(object sender, EventArgs e)
+    private void cmbItemUnique_SelectedIndexChanged(object sender, EventArgs e)
     {
-        mEditorItem.ItemId = ItemDescriptor.IdFromList(cmbResult.SelectedIndex - 1);
+        mEditorItem.ItemId = ItemDescriptor.IdFromList(cmbItemUnique.SelectedIndex - 1);
         var itm = ItemDescriptor.Get(mEditorItem.ItemId);
         if (itm == null || !itm.IsStackable)
         {
@@ -398,6 +410,11 @@ public partial class FrmCrafts : EditorForm
         }
     }
 
+    private void cmbItemMultiple_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        mEditorItem.ItemType = (ItemType)cmbItemMultiple.SelectedIndex;
+    }
+
     private void cmbIngredient_SelectedIndexChanged(object sender, EventArgs e)
     {
         if (lstIngredients.SelectedIndex > -1)
@@ -405,7 +422,7 @@ public partial class FrmCrafts : EditorForm
             mEditorItem.Ingredients[lstIngredients.SelectedIndex].ItemId =
                 ItemDescriptor.IdFromList(cmbIngredient.SelectedIndex - 1);
 
-            updatingIngedients = true;
+            updatingIngredients = true;
             if (cmbIngredient.SelectedIndex > 0)
             {
                 lstIngredients.Items[lstIngredients.SelectedIndex] =
@@ -422,7 +439,7 @@ public partial class FrmCrafts : EditorForm
                     );
             }
 
-            updatingIngedients = false;
+            updatingIngredients = false;
         }
     }
 
@@ -445,7 +462,9 @@ public partial class FrmCrafts : EditorForm
 
         grpGeneral.Text = Strings.CraftsEditor.general;
         lblName.Text = Strings.CraftsEditor.name;
-        lblItem.Text = Strings.CraftsEditor.item;
+        lblCraftType.Text = Strings.CraftsEditor.craftType;
+        lblItemUnique.Text = Strings.CraftsEditor.itemUnique;
+        lblItemMultiple.Text = Strings.CraftsEditor.itemMultiple;
         lblCraftQuantity.Text = Strings.CraftsEditor.craftquantity;
         lblSpeed.Text = Strings.CraftsEditor.time;
         lblFailureChance.Text = Strings.CraftsEditor.FailureChance;
@@ -473,7 +492,7 @@ public partial class FrmCrafts : EditorForm
     {
         // This should never be below 1. We shouldn't accept giving 0 items!
         nudCraftQuantity.Value = Math.Max(1, nudCraftQuantity.Value);
-        mEditorItem.Quantity = (int) nudCraftQuantity.Value;
+        mEditorItem.Quantity = (int)nudCraftQuantity.Value;
     }
 
     private void cmbEvent_SelectedIndexChanged(object sender, EventArgs e)
@@ -487,6 +506,42 @@ public partial class FrmCrafts : EditorForm
         frm.ShowDialog();
     }
 
+    private void RefreshCraftMode()
+    {
+        switch (cmbCraftType.SelectedIndex)
+        {
+            case (int)CraftType.Unique:
+                //Show Unique Item -> Text & Combobox
+                lblItemUnique.Show();
+                cmbItemUnique.Show();
+                //Hide Multiple Item -> Text & Combobox
+                lblItemMultiple.Hide();
+                cmbItemMultiple.Hide();
+
+                mEditorItem.CraftTypeId = (int)CraftType.Unique;
+                break;
+
+            case (int)CraftType.Multiple:
+                //Hide Unique Item -> Text & Combobox
+                lblItemUnique.Hide();
+                cmbItemUnique.Hide();
+                //Show Multiple Item -> Text & Combobox
+                lblItemMultiple.Show();
+                cmbItemMultiple.Show();
+
+                mEditorItem.CraftTypeId = (int)CraftType.Multiple;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void cmbCraftType_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        RefreshCraftMode();
+    }
+
     #region "Item List - Folders, Searching, Sorting, Etc"
 
     public void InitEditor()
@@ -495,13 +550,13 @@ public partial class FrmCrafts : EditorForm
         var mFolders = new List<string>();
         foreach (var itm in CraftingRecipeDescriptor.Lookup)
         {
-            if (!string.IsNullOrEmpty(((CraftingRecipeDescriptor) itm.Value).Folder) &&
-                !mFolders.Contains(((CraftingRecipeDescriptor) itm.Value).Folder))
+            if (!string.IsNullOrEmpty(((CraftingRecipeDescriptor)itm.Value).Folder) &&
+                !mFolders.Contains(((CraftingRecipeDescriptor)itm.Value).Folder))
             {
-                mFolders.Add(((CraftingRecipeDescriptor) itm.Value).Folder);
-                if (!mKnownFolders.Contains(((CraftingRecipeDescriptor) itm.Value).Folder))
+                mFolders.Add(((CraftingRecipeDescriptor)itm.Value).Folder);
+                if (!mKnownFolders.Contains(((CraftingRecipeDescriptor)itm.Value).Folder))
                 {
-                    mKnownFolders.Add(((CraftingRecipeDescriptor) itm.Value).Folder);
+                    mKnownFolders.Add(((CraftingRecipeDescriptor)itm.Value).Folder);
                 }
             }
         }

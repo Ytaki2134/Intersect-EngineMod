@@ -1452,9 +1452,13 @@ Tick timer saved in server config.json.";
 
         public static LocalizedString ingredients = @"Ingredients";
 
-        public static LocalizedString item = @"Item:";
+        public static LocalizedString itemUnique = @"Item:";
+
+        public static LocalizedString itemMultiple = @"Item Type:";
 
         public static LocalizedString ItemLossChance = @"Item Loss (%):";
+
+        public static LocalizedString craftType = @"Craft Type:";
 
         public static LocalizedString Requirements = @"Craft Requirements";
 

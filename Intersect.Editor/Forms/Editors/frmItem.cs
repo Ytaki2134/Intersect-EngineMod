@@ -466,7 +466,7 @@ public partial class FrmItem : EditorForm
         }
 
         var hasItem = mEditorItem != null;
-        
+
         UpdateEditorButtons(hasItem);
         UpdateToolStripItems();
     }
@@ -497,60 +497,121 @@ public partial class FrmItem : EditorForm
             mEditorItem.Event = null;
         }
 
-        if (cmbType.SelectedIndex == (int)ItemType.Consumable)
+        switch (cmbType.SelectedIndex)
         {
-            cmbConsume.SelectedIndex = (int)mEditorItem.Consumable.Type;
-            nudInterval.Value = mEditorItem.Consumable.Value;
-            nudIntervalPercentage.Value = mEditorItem.Consumable.Percentage;
-            grpConsumable.Visible = true;
-        }
-        else if (cmbType.SelectedIndex == (int)ItemType.Spell)
-        {
-            cmbTeachSpell.SelectedIndex = SpellDescriptor.ListIndex(mEditorItem.SpellId) + 1;
-            chkQuickCast.Checked = mEditorItem.QuickCast;
-            chkSingleUseSpell.Checked = mEditorItem.SingleUse;
-            grpSpell.Visible = true;
-        }
-        else if (cmbType.SelectedIndex == (int)ItemType.Event)
-        {
-            cmbEvent.SelectedIndex = EventDescriptor.ListIndex(mEditorItem.EventId) + 1;
-            chkSingleUseEvent.Checked = mEditorItem.SingleUse;
-            grpEvent.Visible = true;
-        }
-        else if (cmbType.SelectedIndex == (int)ItemType.Equipment)
-        {
-            grpEquipment.Visible = true;
-            if (mEditorItem.EquipmentSlot < -1 || mEditorItem.EquipmentSlot >= cmbEquipmentSlot.Items.Count)
-            {
-                mEditorItem.EquipmentSlot = 0;
-            }
+            case (int)ItemType.Consumable:
+                cmbConsume.SelectedIndex = (int)mEditorItem.Consumable.Type;
+                nudInterval.Value = mEditorItem.Consumable.Value;
+                nudIntervalPercentage.Value = mEditorItem.Consumable.Percentage;
+                grpConsumable.Visible = true;
+                break;
 
-            cmbEquipmentSlot.SelectedIndex = mEditorItem.EquipmentSlot;
+            case (int)ItemType.Spell:
+                cmbTeachSpell.SelectedIndex = SpellDescriptor.ListIndex(mEditorItem.SpellId) + 1;
+                chkQuickCast.Checked = mEditorItem.QuickCast;
+                chkSingleUseSpell.Checked = mEditorItem.SingleUse;
+                grpSpell.Visible = true;
+                break;
 
-            // Whether this item type is stackable is not up for debate.
-            chkStackable.Checked = false;
-            chkStackable.Enabled = false;
+            case (int)ItemType.Event:
+                cmbEvent.SelectedIndex = EventDescriptor.ListIndex(mEditorItem.EventId) + 1;
+                chkSingleUseEvent.Checked = mEditorItem.SingleUse;
+                grpEvent.Visible = true;
+                break;
 
-            RefreshBonusList();
-            RefreshStatRangeList();
-        }
-        else if (cmbType.SelectedIndex == (int)ItemType.Bag)
-        {
-            // Cant have no space or negative space.
-            mEditorItem.SlotCount = Math.Max(1, mEditorItem.SlotCount);
-            grpBags.Visible = true;
-            nudBag.Value = mEditorItem.SlotCount;
+            case (int)ItemType.Equipment:
+                grpEquipment.Visible = true;
+                if (mEditorItem.EquipmentSlot < -1 || mEditorItem.EquipmentSlot >= cmbEquipmentSlot.Items.Count)
+                {
+                    mEditorItem.EquipmentSlot = 0;
+                }
 
-            // Whether this item type is stackable is not up for debate.
-            chkStackable.Checked = false;
-            chkStackable.Enabled = false;
+                cmbEquipmentSlot.SelectedIndex = mEditorItem.EquipmentSlot;
+
+                // Whether this item type is stackable is not up for debate.
+                chkStackable.Checked = false;
+                chkStackable.Enabled = false;
+
+                RefreshBonusList();
+                RefreshStatRangeList();
+                break;
+
+            case (int)ItemType.Bag:
+                // Cant have no space or negative space.
+                mEditorItem.SlotCount = Math.Max(1, mEditorItem.SlotCount);
+                grpBags.Visible = true;
+                nudBag.Value = mEditorItem.SlotCount;
+
+                // Whether this item type is stackable is not up for debate.
+                chkStackable.Checked = false;
+                chkStackable.Enabled = false;
+                break;
+
+            case (int)ItemType.Currency:
+                // Whether this item type is stackable is not up for debate.
+                chkStackable.Checked = true;
+                chkStackable.Enabled = false;
+                break;
+
+            default:
+                //throw new NotImplementedException("Unhandled item type in RefreshExtendedData");
+                break;
         }
-        else if (cmbType.SelectedIndex == (int)ItemType.Currency)
-        {
-            // Whether this item type is stackable is not up for debate.
-            chkStackable.Checked = true;
-            chkStackable.Enabled = false;
-        }
+
+        //if (cmbType.SelectedIndex == (int)ItemType.Consumable)
+        //{
+        //    cmbConsume.SelectedIndex = (int)mEditorItem.Consumable.Type;
+        //    nudInterval.Value = mEditorItem.Consumable.Value;
+        //    nudIntervalPercentage.Value = mEditorItem.Consumable.Percentage;
+        //    grpConsumable.Visible = true;
+        //}
+        //else if (cmbType.SelectedIndex == (int)ItemType.Spell)
+        //{
+        //    cmbTeachSpell.SelectedIndex = SpellDescriptor.ListIndex(mEditorItem.SpellId) + 1;
+        //    chkQuickCast.Checked = mEditorItem.QuickCast;
+        //    chkSingleUseSpell.Checked = mEditorItem.SingleUse;
+        //    grpSpell.Visible = true;
+        //}
+        //else if (cmbType.SelectedIndex == (int)ItemType.Event)
+        //{
+        //    cmbEvent.SelectedIndex = EventDescriptor.ListIndex(mEditorItem.EventId) + 1;
+        //    chkSingleUseEvent.Checked = mEditorItem.SingleUse;
+        //    grpEvent.Visible = true;
+        //}
+        //else if (cmbType.SelectedIndex == (int)ItemType.Equipment)
+        //{
+        //    grpEquipment.Visible = true;
+        //    if (mEditorItem.EquipmentSlot < -1 || mEditorItem.EquipmentSlot >= cmbEquipmentSlot.Items.Count)
+        //    {
+        //        mEditorItem.EquipmentSlot = 0;
+        //    }
+
+        //    cmbEquipmentSlot.SelectedIndex = mEditorItem.EquipmentSlot;
+
+        //    // Whether this item type is stackable is not up for debate.
+        //    chkStackable.Checked = false;
+        //    chkStackable.Enabled = false;
+
+        //    RefreshBonusList();
+        //    RefreshStatRangeList();
+        //}
+        //else if (cmbType.SelectedIndex == (int)ItemType.Bag)
+        //{
+        //    // Cant have no space or negative space.
+        //    mEditorItem.SlotCount = Math.Max(1, mEditorItem.SlotCount);
+        //    grpBags.Visible = true;
+        //    nudBag.Value = mEditorItem.SlotCount;
+
+        //    // Whether this item type is stackable is not up for debate.
+        //    chkStackable.Checked = false;
+        //    chkStackable.Enabled = false;
+        //}
+        //else if (cmbType.SelectedIndex == (int)ItemType.Currency)
+        //{
+        //    // Whether this item type is stackable is not up for debate.
+        //    chkStackable.Checked = true;
+        //    chkStackable.Enabled = false;
+        //}
 
         mEditorItem.ItemType = (ItemType)cmbType.SelectedIndex;
 

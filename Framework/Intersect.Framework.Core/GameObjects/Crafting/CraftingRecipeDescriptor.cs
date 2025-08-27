@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Intersect.Framework.Core.GameObjects.Conditions;
 using Intersect.Framework.Core.GameObjects.Events;
+using Intersect.Framework.Core.GameObjects.Items;
 using Intersect.Models;
 using Newtonsoft.Json;
 
@@ -10,6 +11,12 @@ public partial class CraftingRecipeDescriptor : DatabaseObject<CraftingRecipeDes
 {
     [NotMapped]
     public List<CraftingRecipeIngredient> Ingredients { get; set; } = [];
+
+    [NotMapped]
+    public int CraftTypeId { get; set; } = 0;
+
+    [NotMapped]
+    public ItemType ItemType { get; set; } = ItemType.None;
 
     [JsonConstructor]
     public CraftingRecipeDescriptor(Guid id) : base(id)
@@ -46,6 +53,7 @@ public partial class CraftingRecipeDescriptor : DatabaseObject<CraftingRecipeDes
     [JsonProperty(Order = -2)]
     public int Time { get; set; }
 
+
     /// <inheritdoc />
     public string Folder { get; set; } = string.Empty;
 
@@ -60,6 +68,7 @@ public partial class CraftingRecipeDescriptor : DatabaseObject<CraftingRecipeDes
         get => EventDescriptor.Get(EventId);
         set => EventId = value?.Id ?? Guid.Empty;
     }
+
 
     [NotMapped]
     public ConditionLists CraftingRequirements { get; set; } = new();
